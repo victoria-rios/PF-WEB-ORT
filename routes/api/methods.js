@@ -4,6 +4,7 @@
 
 const User = require('../../models/User');
 const Dni = require('../../models/Dni');
+const Especialidad = require('../../models/Especialidad');
 const Consulta = require('../../models/Comunicacion');
 //const Documento = require('../../models/Document');
 const express = require('express');
@@ -55,7 +56,7 @@ const upload = multer({ storage });
 
 /*----------------------API GET Methods-------------------------*/
 
-//Download Archivo
+/*Download Archivo*/
 app.get("/api/file/:filename", (req, res) => {
 
     gfs.find({
@@ -78,11 +79,20 @@ app.get("/api/file/:filename", (req, res) => {
       });
 });
 
+/*List Especialidades*/ 
+app.get("/api/list/especialidades", (req,res) => {
+    
+    Especialidad.find({}, function(err, especialidades) {
+        res.json(especialidades);  
+      });
+   
+});
+
 
 /*----------------------API POST Methods-------------------------*/
 
 
-//Registrar Cliente JWT
+/*Registrar Cliente JWT*/
 app.post('/api/signup', async (req,res,next) => {
     
     /*Recibo parametros del body html*/ 
@@ -204,7 +214,7 @@ app.post('/api/signup', async (req,res,next) => {
 
 });
 
-//Verificar JWT Front-End, se envia token
+/*Verificar JWT Front-End, se envia token*/
 app.get('/api/verify', verifyToken, async (req,res,next) => {
 
     /*Verifico que exista el token , que no esté caducado*/
@@ -219,7 +229,7 @@ app.get('/api/verify', verifyToken, async (req,res,next) => {
 
 });
 
-//Logiar Cliente JWT
+/*Logiar Cliente JWT*/
 app.post('/api/signin', async (req,res,next) => {
     
     /*Consumo Body HTML*/ 
@@ -281,7 +291,7 @@ app.post('/api/signin', async (req,res,next) => {
     });
 });
 
-//Upload Archivos a la BD MongoDB
+/*Upload Archivos a la BD MongoDB*/
 app.post('/api/upload',upload.single('file'), async (req,res) => {
 
     const { body } = req;
@@ -323,7 +333,7 @@ app.post('/api/upload',upload.single('file'), async (req,res) => {
 
 });
     
-//Trae todos los abogados
+/*Trae todos los abogados*/
 app.post('/api/consulta', async (req,res,next) => { 
     
     const { body } = req;
@@ -335,51 +345,5 @@ app.post('/api/consulta', async (req,res,next) => {
 
 });
 
-
-//Export Obligatorio Del File Methods.Js
+/*Export obligatorio del file Methods.Js*/
 module.exports = app;
-
-
-/*----------------------TEST-------------------------*/
-
-
-/*app.post('/api/mongodb',(req,res,next) => {
-   
-    const{ body } = req;
-    
-      const { 
-      name,
-      age
-    } = body;
-
-    
-    const { 
-        creator,
-        title
-      } = body;
-   
-
-        //Guardo el User. Creo el Objeto Users
-        const newStory = new Story();
-        newStory._creator = creator;
-        newStory.title = title;
-        newStory.save()
-        .then((result) => {
-          Person.findOne({ name: 'gabriel' }, (err, user) => {
-              if (user) {
-                  user.stories.push(newStory.title);
-                  user.save();
-                  res.json({ message: 'Object Created' });
-              }
-          });
-        })
-        .catch((error) => {
-          res.status(500).json({ error });
-        });
-
-});
-
-
-
-
-*/

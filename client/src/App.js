@@ -12,7 +12,7 @@ render (){
       <Router>
       <div className="App">
 
-      <Route path="/Signup" component={Signin} />
+      <Route path="/Signin" component={Signin} />
 
       </div>
       </Router>
