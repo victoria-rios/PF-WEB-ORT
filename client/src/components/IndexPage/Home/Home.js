@@ -1,15 +1,15 @@
 import React from 'react';
+import Navbar from '../Navbar/Navbar';
 
 class Home extends React.Component {
 
     render (){
         return (
-    
           <div>
-          <h1>Acá estoy en la main page</h1>
+            <Navbar></Navbar>
           </div>
                ); 
             }
     }
         
-    export default Home;
+  export default Home;

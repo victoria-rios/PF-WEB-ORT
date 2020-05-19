@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-
+var GFS = mongoose.model("GFS", new mongoose.Schema({}, {strict: false}), "uploads.files" );
 
 const UserSchema = new mongoose.Schema({
     
@@ -70,11 +70,10 @@ const UserSchema = new mongoose.Schema({
     },
     //Documentos Encriptados
     documents:
-       /* [{ type: mongoose.Schema.Types.ObjectId, ref: 'Documento' }],*/
-        [{
-            type: mongoose.Schema.Types.ObjectId,
-            type: mongoose.Schema.Types.ObjectId
-        }],
+        [{ type: mongoose.Schema.Types.ObjectId, ref: 'GFS' }],
+        /*[{
+            type: mongoose.Schema.Types.ObjectId, ref: 'uploads.files' 
+        }],*/
         require: false
         /*[{ type: mongoose.Schema.Types.ObjectId, ref: 'uploads.files' }],*/
     ,

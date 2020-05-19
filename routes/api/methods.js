@@ -6,7 +6,7 @@ const User = require('../../models/User');
 const Dni = require('../../models/Dni');
 const Especialidad = require('../../models/Especialidad');
 const Consulta = require('../../models/Comunicacion');
-//const Documento = require('../../models/Document');
+const Documento = require('../../models/Document');
 const express = require('express');
 const app = express.Router();
 const jwt = require('jsonwebtoken');
@@ -88,6 +88,37 @@ app.get("/api/list/especialidades", (req,res) => {
    
 });
 
+/* Traer un User a partir de un ID */
+app.get("/api/user/:id", function (req,res) {
+    
+  
+    User.findById(req.params.id)
+        .select("documents")
+        .exec(function(err,file){
+            if(!file){
+                return res.status(404).end();
+            }else{
+                return res.status(200).json(file);
+            }
+        })
+});
+
+/* Traer los documents a partir de un ID */
+app.get("/api/listFiles/:id", function (req,res) {
+    
+    User.findById(req.params.id)
+    .populate('documents')
+    .exec(function(err,file){
+        if(!file){
+            return res.status(404).end();
+        }else{
+            return res.status(200).json(file);
+        }
+    })
+
+
+});
+    
 
 /*----------------------API POST Methods-------------------------*/
 
@@ -299,7 +330,7 @@ app.post('/api/upload',upload.single('file'), async (req,res) => {
     const { id } = body;
 
     /*const documento = new Documento();
-    documento.id_documento = req.file.id;
+    documento.id_upload = req.file.id;
     console.log(documento);
     documento.save((err) => {
         if(err){

@@ -1,17 +1,28 @@
-import React from "react"
-import "./Navbar.css"
+import React from 'react';
+import {Link} from  'react-router-dom'
 
-const Navbar = () => (
-  <nav className="navbar">
-    <div className="navbar--logo-holder">
-      <img alt="logo" className="navbar--logo" />
-      <h1> Stick'Me</h1>
-    </div>
-    <ul className="navbar--link">
-      <li className="navbar--link-item">Home</li>
-      <li className="navbar--link-item">About</li>
-      <li className="navbar--link-item">Blog</li>
-    </ul>
-  </nav>
-)
-export default Navbar
+class Navbar extends React.Component {
+
+    render (){
+        return (
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+              <Link to="/"><a class="nav-item nav-link active">Home <span class="sr-only">(current)</span></a></Link>
+              <Link to="/Signin"><a class="nav-item nav-link">Login</a></Link>
+              <Link to="/Signup"><a class="nav-item nav-link">Registrarse</a></Link>
+            <a class="nav-item nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </div>
+        </div>
+      </nav>  
+        
+      );
+    }
+  }
+
+  export default Navbar;
