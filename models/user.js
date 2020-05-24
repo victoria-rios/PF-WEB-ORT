@@ -92,11 +92,11 @@ const UserSchema = new mongoose.Schema({
        tomo : String,
        folio : String,
        colegio: String
-    },
+    }, 
     //Array de Especialidades
-    especialidad:[{
+    especialidad:{
         type:String
-    }],
+    },
     //Notas CV
     cv:{
        type: String,

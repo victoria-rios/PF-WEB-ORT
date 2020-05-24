@@ -130,7 +130,7 @@ app.post('/api/signup', async (req,res,next) => {
     /*Recibo parametros del body html*/ 
     const { body } = req;
 
-    const {nombre,apellido,password,tipo,dni_} = body;
+    const {nombre,apellido,password,tipo,dni_,partido,zona} = body;
 
     /*no es const ya que lo modifico con toLowerCase*/
     let { email } = body;
@@ -394,13 +394,13 @@ app.post('/api/consulta', async (req,res,next) => {
     
     const { body } = req;
 
-    const { id,consulta } = body;
+    const { id, consulta } = body;
 
-    const consulta = new Consulta();
+    /*const consulta = new Consulta();
 
     consulta.texto = cons;   
 
-    consulta.save();
+    consulta.save();*/
 
 });
 
@@ -408,11 +408,11 @@ app.post('/api/terminaregistro' ,async (req,res,next) => {
 
     const { body } = req;
 
-    const { id,data } = body;
+    const { id,tomo,folio,colegio,especialidad } = body;
 
-    await User.find({id: id}, (err, user) => {
+    await User.find({_id: id}, (err, user) => {
         if(err){
-                return res.send({
+                return res.json({
                 success:false,
                 message: 'Error al encontrar ID'
          });
@@ -424,6 +424,34 @@ app.post('/api/terminaregistro' ,async (req,res,next) => {
             return res.json('Datos Incompletos');
         }
     }
+
+
+    User.findOneAndUpdate({_id: id},
+        { $set: { 
+            matricula: {
+            
+            tomo : tomo,
+            folio : folio,
+            colegio : colegio
+            
+        },
+
+        especialidad : especialidad
+        
+        } }
+        , function (err, user) {
+        if(err){
+            return res.json({
+            success:false,
+            message: 'Error' 
+            }); 
+        }else{
+            return res.json("Completado Exitosamente");
+        }
+    });
+
+   
+    
 
 });
 
