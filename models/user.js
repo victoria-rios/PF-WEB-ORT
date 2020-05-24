@@ -29,18 +29,18 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    //Dato Necesario Para Filtros
+    //Dato Necesario Para Filtros A/C
     zona:{
        type: String,
-       require: false //True
+       require: true
     },
-    //Dato Necesario Para Filtros
+    //Dato Necesario Para Filtros A/C
     partido:{
        type: String,
        require: false //True
     },
-    //Despues Del Register
-    codpos:{
+    //Despues Del Register A/C
+    /*codpos:{
        type: String,
        require: false
     },
@@ -58,16 +58,16 @@ const UserSchema = new mongoose.Schema({
     nacionalidad:{
        type: String,
        require: false
-    },
+    },*/
     //Validar DNI
     dni:{
         type: mongoose.Schema.Types.ObjectId, ref: 'DNI'
     },
     //Verificamos uso
-    avatar:{
+    /*avatar:{
         type: String, 
         require: false  
-    },
+    },*/
     //Documentos Encriptados
     documents:
         [{ type: mongoose.Schema.Types.ObjectId, ref: 'GFS' }],

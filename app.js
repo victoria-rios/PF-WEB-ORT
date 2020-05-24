@@ -18,6 +18,7 @@ mongoose.connect(db,{useNewUrlParser: true})
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
+
 // BodyParser
 app.use(express.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -27,6 +28,7 @@ app.use('/',require('./routes/api/methods'));
 
 //Middleware
 app.use(morgan('dev'));
+
 
 //App Listening Selected Port
 const port = process.env.PORT || 5000; //Selected Port Number

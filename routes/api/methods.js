@@ -5,8 +5,9 @@
 const User = require('../../models/User');
 const Dni = require('../../models/Dni');
 const Especialidad = require('../../models/Especialidad');
-const Consulta = require('../../models/Comunicacion');
+const ConsultaGrupo = require('../../models/ConsultaGrupo');
 const Documento = require('../../models/Document');
+const Consulta = require('../../models/Consulta');
 const express = require('express');
 const app = express.Router();
 const jwt = require('jsonwebtoken');
@@ -210,16 +211,15 @@ app.post('/api/signup', async (req,res,next) => {
         password : password,
         email : email,
         tipo : tipo,
-        dni : _dni._id
+        dni : _dni._id,
+        partido : partido ,
+        zona: zona
     });
 
     /*setDefaultsOnInsert Upsert Reemplazar esta logica
     no debe estar atado al endpoint*/
     
-    if(tipo === 'A'){
-        
-    }
-  
+    /*if(tipo === 'A'){}          Crear EndPoint*/ 
   
     user.password = user.generateHash(password);
     //No esta funcionando el metodo desde el schema.
@@ -365,15 +365,69 @@ app.post('/api/upload',upload.single('file'), async (req,res) => {
 });
     
 /*Trae todos los abogados*/
+app.post('/api/crearconsulta', async (req,res,next) => { 
+    
+    const { body } = req;
+
+    const { iduser, idabogado, cons } = body;
+
+    const consulta = new Consulta();
+
+    consulta.texto = cons;   
+
+    consulta.save();
+
+    const consultaGrupo = new ConsultaGrupo();
+
+    consultaGrupo.motivo = id;
+
+    consultaGrupo.textoConsulta = consulta._id;
+    
+    consultaGrupo.save();
+
+    res.json('Agregado');
+
+});
+
+
 app.post('/api/consulta', async (req,res,next) => { 
     
     const { body } = req;
 
-    const { titulo,consulta, } = body;
+    const { id,consulta } = body;
 
-    //const consulta = new Consulta();
-     
+    const consulta = new Consulta();
 
+    consulta.texto = cons;   
+
+    consulta.save();
+
+});
+
+app.post('/api/terminaregistro' ,async (req,res,next) => {
+
+    const { body } = req;
+
+    const { id,data } = body;
+
+    await User.find({id: id}, (err, user) => {
+        if(err){
+                return res.send({
+                success:false,
+                message: 'Error al encontrar ID'
+         });
+        } 
+
+    
+    if(user.tipo == 'A'){
+        if(user.tomo == '' || user.folio == '' || user.colegio == '' || user.especialidad == ''){
+            return res.json('Datos Incompletos');
+        }
+    }
+
+});
+
+    
 });
 
 /*Export obligatorio del file Methods.Js*/
