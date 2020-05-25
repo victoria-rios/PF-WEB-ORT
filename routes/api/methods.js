@@ -119,6 +119,31 @@ app.get("/api/listFiles/:id", function (req,res) {
 
 
 });
+
+/*Listado Consulta Abogados*/
+app.get('/api/listconsulta', async (req,res,next) => { 
+    
+    const { body } = req;
+
+    const { id } = body;
+    
+    User
+      .findById({_id : id})
+      .select('consultaGrupo')
+      .populate({
+          path: 'consultaGrupo',
+          populate: { path: 'textoConsulta', model: 'Consulta' },
+          populate: { path: 'id_cli', model: 'user', select: ['nombre','apellido']}
+        })
+      .exec(function(err,user){
+          if(!user){
+              return res.status(404).end();
+          }else{
+              return res.status(200).json(user);
+          }
+      })
+
+});  
     
 
 /*----------------------API POST Methods-------------------------*/
@@ -169,12 +194,12 @@ app.post('/api/signup', async (req,res,next) => {
             message: 'Sin Tipo'
      });
     }
-    /*if(!dni_){
+    if(!dni_){
         return res.send({
             success:false,
             message: 'Sin D.N.I'
      });
-    }*/
+    }
 
     /*OJO VALIDAR ENTRADA DE OTROS DATOS*/ 
     /*Busco que el user no este repetido*/    
@@ -212,7 +237,7 @@ app.post('/api/signup', async (req,res,next) => {
         email : email,
         tipo : tipo,
         dni : _dni._id,
-        partido : partido ,
+        partido : partido,
         zona: zona
     });
 
@@ -369,23 +394,130 @@ app.post('/api/crearconsulta', async (req,res,next) => {
     
     const { body } = req;
 
-    const { iduser, idabogado, cons } = body;
+    const { iduser,idabogado,cons,titulo,tipo } = body;
 
+    //Objetos Consulta (Canal - Mensaje)
     const consulta = new Consulta();
-
-    consulta.texto = cons;   
-
-    consulta.save();
-
     const consultaGrupo = new ConsultaGrupo();
 
-    consultaGrupo.motivo = id;
-
-    consultaGrupo.textoConsulta = consulta._id;
+    if(!tipo){
+        return res.send({
+            success:false,
+            message: 'Sin Tipo'
+      });
+     }; 
     
-    consultaGrupo.save();
+    if(!iduser){
+        return res.send({
+            success:false,
+            message: 'Error parametro emisor'
+      });
+     };
+    
+     if(!idabogado){
+        return res.send({
+            success:false,
+            message: 'Error parametro destinatario'
+     });
+    };
+    
+    if(!cons){
+        return res.send({
+            success:false,
+            message: 'Consulta vacia'
+     });
+    };
+     
 
-    res.json('Agregado');
+    if(tipo == 'A'){
+        
+    consulta.emisor = idabogado;
+    consulta.receptor =  iduser;  
+
+    }else{
+
+    consulta.emisor = iduser;
+    consulta.receptor = idabogado;    
+            
+    }
+
+    consulta.texto = cons;
+
+    consulta.save((err) => {
+        if(err){
+                return res.send({
+                success:false,
+                message: 'Imposible Crear Consulta'
+            });  
+        }
+    });
+
+    consultaGrupo.motivo = titulo;
+    
+    consultaGrupo.textoConsulta = consulta._id;
+
+    consultaGrupo.id_cli = iduser;
+    
+    consultaGrupo.id_abo = idabogado;
+    
+
+    consultaGrupo.save((err) => {
+        if(err){
+            
+        Consulta.findByIdAndDelete(consulta._id);
+                
+        return res.send({
+            success:false,
+            message: 'Imposible Crear Consulta'
+        });
+                 
+        }else{
+            
+        User.findOneAndUpdate({_id: iduser},  
+            
+        { $push: { consultaGrupo : consultaGrupo._id } },(err, user) => {
+      
+        if(err){
+
+        Consulta.findByIdAndDelete(consulta._id);
+
+        ConsultaGrupo.findByIdAndDelete(consultaGrupo._id);
+
+        return res.send({
+            success:false,
+            message: 'Error Usuario Inexistente, Imposible Generar Pregunta'
+            //Dificil que llegue a este punto de error 
+            });
+                
+        }
+
+        });
+
+        User.findOneAndUpdate({_id: idabogado},  
+            
+            { $push: { consultaGrupo : consultaGrupo._id } },(err, user) => {
+          
+            if(err){
+    
+            Consulta.findByIdAndDelete(consulta._id);
+    
+            ConsultaGrupo.findByIdAndDelete(consultaGrupo._id);
+    
+            return res.send({
+                success:false,
+                message: 'Error Usuario Inexistente, Imposible Generar Pregunta'
+                //Dificil que llegue a este punto de error 
+                });
+                    
+            }
+    
+        });
+
+        //Salida Exitosa Total Endpoint
+        return res.json('Consulta Realizada');
+        
+        }
+    });
 
 });
 
@@ -400,10 +532,41 @@ app.post('/api/consulta', async (req,res,next) => {
 
     consulta.texto = cons;   
 
-    consulta.save();*/
+    consulta.save();
+    
+    STATUS CREATE*/
 
 });
 
+/*Rechazo Consulta*/
+app.post('/api/rechazoservicio', async (req,res,next) => { 
+    
+    const { body } = req;
+
+    const { idconsulta } = body;
+
+    ConsultaGrupo.findOneAndUpdate({_id: idconsulta},  
+            
+        { $set: { estado : 'RECHAZADO' } },(err, user) => {
+      
+        if(err){
+
+        return res.send({
+            success:false,
+            message: 'Error Usuario Inexistente, Imposible Generar Pregunta'
+            //Dificil que llegue a este punto de error 
+            });
+                
+        }else{
+            return res.json('Consulta Rechazada');
+        }
+    
+    });
+
+});   
+  
+
+/* Termina Registro */ 
 app.post('/api/terminaregistro' ,async (req,res,next) => {
 
     const { body } = req;

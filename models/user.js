@@ -78,8 +78,8 @@ const UserSchema = new mongoose.Schema({
         /*[{ type: mongoose.Schema.Types.ObjectId, ref: 'uploads.files' }],*/
     ,
     //Array de consultas
-    comunicacion:
-        [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comunicacion' }],
+    consultaGrupo: 
+        [{ type: mongoose.Schema.Types.ObjectId, ref: 'ConsultaGrupo' }],
         require: false
     ,
     //Dato Adicional (Modificable)
